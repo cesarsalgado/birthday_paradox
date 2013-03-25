@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Birthday Paradox</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
+  </head>
+  <body>
+
+    <div class="row">
+      <div class="span10">
+        <canvas id="c"></canvas>
+      </div>
+      <div class="span2">
+        <div id="game_status">
+          <label id="status_collision">No collision.</label>
+          <label id="shots">Shots = </label>
+        </div>
+        <div id="ctrl_buttons">
+          <button onclick="raffle()" class="btn btn-primary">Raffle a Square!</button>
+          <button onclick="reset()" class="btn">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      // constants
+      var unit = 35;
+      var side_units = 19;
+      var width = side_units*unit;
+      var height = side_units*unit;
+      // end constants
+
+      var game_status = $("#game_status");
+      game_status.css('margin-top', height/3.0);
+
+      var ctrl_buttons = $("#ctrl_buttons");
+      ctrl_buttons.css('margin-top', 40.0);
+      // ctrl_buttons[0].getContext("2d").canvas.
+
+      var c = $("#c");
+      c.width = width;
+      c.height = height;
+
+      var ctx = c[0].getContext("2d");
+      ctx.canvas.width = width;
+      ctx.canvas.height = height; 
+
+      draw_grid(ctx, width, height);
+
+      // ctx.fillStyle="#FF0000";
+      // ctx.fillRect(0,0,150,75);
+
+      var hittedSquares = [];
+      var shots = 0;
+      $("label#shots").text("Shots = " + shots); 
+      $("label#status_collision").text("No collision."); 
+      $("label#status_collision").prev().css("color", "#FFFFFF");
+
+
+      // functions definitions
+      function draw_grid(ctx, width, height) {
+
+        try {
+          /* vertical lines */
+          for (var x = 0.0; x <= width; x += unit) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+          }
+
+          /* horizontal lines */
+          for (var y = 0.0; y <= height; y += unit) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+          }
+
+          /* draw it! */
+          // ctx.strokeStyle = "#eee";
+          ctx.stroke();
+        } catch(err) {}
+      }
+
+      function getRandom(min, max) {
+        return min + Math.floor(Math.random() * (max - min + 1));
+      }
+
+      function intToRowCol(n, size) {
+        var row = Math.floor(n/size);
+        var col = n % size;
+        return {row: row, col: col};
+      }
+
+      function rowColToXY(row, col, unit) {
+        var y = row*unit;
+        var x = col*unit;
+        return {x: x, y: y};
+      }
+
+      function paintSquareNumber(n, color) {
+        if (color == 'red') {
+          ctx.fillStyle="#D40005";
+          $("label#status_collision").text("Boooommmm!!!!!. Collision happened."); 
+          $("label#status_collision").prev().css("color", "#D40005");
+        } else if (color == 'green') {
+          ctx.fillStyle="#8FC400";
+        } else {
+          throw "square color can only be either green or red.";
+        }
+
+        rowCol = intToRowCol(n, side_units);
+
+        xy = rowColToXY(rowCol.row, rowCol.col, unit);
+
+        ctx.fillRect(xy.x,xy.y,unit,unit);
+      }
+
+      // action functions
+      function raffle() {
+        var n = getRandom(0, side_units*side_units-1);
+
+        if (hittedSquares.indexOf(n) == -1) {
+          var color = 'green';
+        } else {
+          var color = 'red';
+        }
+        paintSquareNumber(n, color);
+        hittedSquares.push(n);
+        shots = shots + 1;
+        $("label#shots").text("Shots = " + shots);
+
+      }
+      function reset() {
+        hittedSquares = [];
+        c[0].width = c[0].width;
+        shots = 0;
+        $("label#shots").text("Shots = " + shots);
+        $("label#status_collision").text("No collision."); 
+        $("label#status_collision").prev().css("color", "#FFFFFF");
+        draw_grid(ctx, width, height);
+      }
+    </script>
+  </body>
+</html>
