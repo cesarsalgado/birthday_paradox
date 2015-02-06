@@ -1,6 +1,8 @@
 birthday_paradox
 ================
 
+http://cesarsalgado.com/birthday_paradox
+
 Simulation that tries to make the birthday paradox more intuitive.
 
 This is a interactive simulation that tries to build an intuition in the user while it checks 
